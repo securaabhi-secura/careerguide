@@ -2,16 +2,36 @@ import pg from "pg";
 
 const { Pool } = pg;
 
-const connectionString = process.env.POSTGRES_URL;
-if (!connectionString) {
+const rawConnectionString = process.env.POSTGRES_URL;
+if (!rawConnectionString) {
   throw new Error(
     "POSTGRES_URL must be set in the environment (see .env.example). " +
       "On Vercel, add the Postgres storage integration and it's set automatically."
   );
 }
 
-// Vercel/Neon Postgres requires SSL; a local Postgres for dev typically doesn't use it.
-const isLocal = /localhost|127\.0\.0\.1/.test(connectionString);
+// Vercel/Supabase/Neon Postgres requires SSL; a local Postgres for dev typically doesn't use it.
+const isLocal = /localhost|127\.0\.0\.1/.test(rawConnectionString);
+
+// Managed Postgres providers (Supabase in particular) often embed an
+// sslmode=... query param in the connection string. node-postgres derives
+// its own SSL settings from that param, which can conflict with — and
+// sometimes win over — the explicit `ssl` option below, causing a
+// "self-signed certificate in certificate chain" error even when we've
+// asked it not to verify. Stripping the param removes the ambiguity so our
+// explicit ssl config below is the only thing in effect.
+function stripSslQueryParams(urlStr) {
+  try {
+    const url = new URL(urlStr);
+    url.searchParams.delete("sslmode");
+    url.searchParams.delete("ssl");
+    return url.toString();
+  } catch {
+    return urlStr; // if it's not a parseable URL, leave it untouched
+  }
+}
+
+const connectionString = stripSslQueryParams(rawConnectionString);
 
 export const pool = new Pool({
   connectionString,
