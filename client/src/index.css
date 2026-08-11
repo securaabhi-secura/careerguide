@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  @apply font-sans text-brand-dark bg-surface antialiased;
+}
+
+/* Visible keyboard focus everywhere, for accessibility */
+:focus-visible {
+  outline: 2px solid #6C4CF1;
+  outline-offset: 2px;
+}
+
+.app-shell {
+  @apply mx-auto min-h-screen w-full bg-white sm:max-w-[480px] sm:shadow-2xl md:max-w-none md:shadow-none md:bg-surface;
+}
+
+.desktop-frame {
+  @apply md:mx-auto md:max-w-[420px] md:min-h-[calc(100vh-2.5rem)] md:my-5 md:rounded-[28px] md:bg-white md:shadow-card md:overflow-hidden md:border md:border-border;
+}
+
+.input {
+  @apply w-full rounded-xl2 border border-border bg-white px-4 py-3 text-sm text-brand-dark placeholder:text-slate-400 focus:border-brand outline-none;
+}
+
+.card {
+  @apply rounded-2xl border border-border bg-white p-4 shadow-sm;
+}
+
+.btn-primary {
+  @apply bg-brand text-white font-semibold py-3 rounded-xl2 text-center disabled:opacity-60;
+}
+
+.btn-secondary {
+  @apply bg-white border border-border text-brand-dark font-medium py-3 rounded-xl2 text-center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
